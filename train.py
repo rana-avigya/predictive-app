@@ -1,49 +1,58 @@
-import argparse
-
-from pathlib import Path
 import pandas as pd
-import joblib
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report, mean_squared_error
+import joblib
+from feature_engineering import preprocess_features
 
-def column_types(df, exclude=None):
-    if exclude is None:
-        exclude = []
-    numeric = df.select_dtypes(include=['number']).columns.tolist()
-    categorical = [c for c in df.columns if c not in numeric and c not in exclude]
-    return numeric, categorical
+# CONFIG
+TARGET = "genre"          # update with your target column
+PROBLEM = "classification" # "classification" or "regression"
+DROP_COLS = ["track_id"]  # columns to ignore
 
-def build_pipeline(numeric_features, categorical_features, problem = 'classification'):
-    numeric_transformer = Pipeline(steps=[
-        ('imputer',SimpleImputer(strategy='median')),
-        ('scaler',StandardScaler())
-    ])
+# Load dataset
+df = pd.read_csv("data.csv").sample(500, random_state=42)
+X, y, preprocessor = preprocess_features(df, TARGET, drop_cols=DROP_COLS)
 
-    categorical_transformer = Pipeline(steps = [
-        ('imputer',SimpleImputer(   strategy='most_frequent')),
-        ('onehot', OneHotEncoder(handle_unknown='ignore',sparse=False))
-        
-    ])
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
-    preprocessor = ColumnTransformer(transformers=[
-        ('num', numeric_transformer, numeric_features),
-        ('cat',categorical_transformer, categorical_features)
-    ])
+# Select model
+if PROBLEM == "classification":
+    model = RandomForestClassifier(random_state=42)
+else:
+    model = RandomForestRegressor(random_state=42)
 
-    if problem == 'classification':
-        model = RandomForestClassifier(n_estimators= 150, random_state=42, n_jobs =-1)
-    else:
-        model = RandomForestRegressor(n_estimators=150, random_state=42, n_jobs=-1)
+# Pipeline
+pipeline = Pipeline([
+    ('preprocess', preprocessor),
+    ('model', model)
+])
 
-    pipeline = Pipeline(steps=[('preprocessor', preprocessor), ('model', model)])
+# Optional: Hyperparameter tuning
+param_grid = {
+    'model__n_estimators': [100, 200],
+    'model__max_depth': [None, 5, 10],
+    'model__min_samples_split': [2, 5]
+}
 
-    return pipeline
+grid = GridSearchCV(pipeline, param_grid, cv=3, n_jobs=-1)
+grid.fit(X_train, y_train)
 
-def main():
-    df = pd.read_csv('shopping_behavior_updated.csv')
-    X = df.drop(columns)
+# Evaluate
+y_pred = grid.predict(X_test)
+if PROBLEM == "classification":
+    print("Best Params:", grid.best_params_)
+    print("Accuracy:", accuracy_score(y_test, y_pred))
+    print(classification_report(y_test, y_pred))
+else:
+    rmse = mean_squared_error(y_test, y_pred, squared=False)
+    print("Best Params:", grid.best_params_)
+    print("RMSE:", rmse)
+
+# Save model
+joblib.dump(grid.best_estimator_, "model.pkl")
+print("Model saved as model.pkl")
