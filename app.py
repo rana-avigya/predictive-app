@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 st.title("Predictive Model")
 
@@ -18,6 +21,15 @@ input_cols = df.drop(columns=["sentiment"] + DROP_COLS, errors='ignore').columns
 
 st.write("dataset preview")
 st.dataframe(df.head())
+
+st.sidebar.header("EDA Options")
+feature = st.sidebar.selectbox("Select feature to visualize", df.columns)
+fig, ax = plt.subplots()
+if df[feature].dtype in ['int64','float64']:
+    sns.histplot(df[feature], kde=True, ax=ax)
+else:
+    sns.countplot(data=df, x=feature, ax=ax)
+st.pyplot(fig)
 
 
 single_input = {}
