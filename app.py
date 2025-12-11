@@ -6,12 +6,12 @@ st.title("Predictive Model")
 
 # CONFIG
 PROBLEM = "classification"  # must match the trained model
-DROP_COLS = ["track_id"]
+DROP_COLS = ["customer_id"]
 
 # Load model
 model = joblib.load("model.pkl")
 df = pd.read_csv("data.csv")
-input_cols = df.drop(columns=["genre"] + DROP_COLS, errors='ignore').columns
+input_cols = df.drop(columns=["sentiment"] + DROP_COLS, errors='ignore').columns
 
 # --- Single input ---
 single_input = {}

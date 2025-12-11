@@ -7,12 +7,12 @@ import joblib
 from feature_engineering import preprocess_features
 
 # CONFIG
-TARGET = "genre"          # update with your target column
+TARGET = "sentiment"          # update with your target column
 PROBLEM = "classification" # "classification" or "regression"
-DROP_COLS = ["track_id"]  # columns to ignore
+DROP_COLS = ["customer_id"]  # columns to ignore
 
 # Load dataset
-df = pd.read_csv("data.csv").sample(500, random_state=42)
+df = pd.read_csv("data.csv").sample(5000, random_state=42)
 X, y, preprocessor = preprocess_features(df, TARGET, drop_cols=DROP_COLS)
 
 # Train-test split
