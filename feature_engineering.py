@@ -3,7 +3,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 
 def preprocess_features(df, target_col, drop_cols=None):
-    """Prepares X, y, and preprocessor for a dataset"""
+    
     if drop_cols is None:
         drop_cols = []
     drop_cols = list(drop_cols) + [target_col]
