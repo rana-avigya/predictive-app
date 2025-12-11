@@ -13,7 +13,13 @@ model = joblib.load("model.pkl")
 df = pd.read_csv("data.csv")
 input_cols = df.drop(columns=["sentiment"] + DROP_COLS, errors='ignore').columns
 
-# --- Single input ---
+
+# display EDA
+
+st.write("dataset preview")
+st.dataframe(df.head())
+
+
 single_input = {}
 for col in input_cols:
     if df[col].dtype in ['int64','float64']:
