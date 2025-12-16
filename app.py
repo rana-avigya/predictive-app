@@ -10,8 +10,9 @@ st.title(" Predictive Model App")
 #loads the model generated in train.py using joblib
 data = joblib.load("model.pkl")
 model = data["model"]
-
+#the target to be predicted using the ML algorithm
 target_column = data["target"]
+
 
 ml_model = model.named_steps['model']
 if hasattr(ml_model, 'predict_proba') or hasattr(ml_model, 'classes_'):
@@ -19,14 +20,17 @@ if hasattr(ml_model, 'predict_proba') or hasattr(ml_model, 'classes_'):
 else:
     PROBLEM = 'regression'
 
+#using pandas to read the data.csv file
 df = pd.read_csv("data.csv")
-
+#drops columns to be excluded from EDA and prediction
 df = df.drop(columns=["post_id","upload_date"])
-DROP_COLS = ["customer_id", target_column]
-input_cols = df.drop(columns=DROP_COLS, errors='ignore').columns
+columns_dropped = ["customer_id", target_column]
+input_cols = df.drop(columns=columns_dropped, errors='ignore').columns
 
+#creates two tabs in the  page, first tab is for EDA and the second tab is for prediction
 tabs = st.tabs(["EDA", "Predictive"])
 
+#EDA logic is in tabs[0]
 with tabs[0]:
     st.header("Exploratory Data Analysis")
     st.subheader("Dataset Preview")
@@ -82,6 +86,7 @@ with tabs[0]:
             sns.countplot(x=feature_col, hue=target_col, data=df, palette="Set1", ax=ax)
     st.pyplot(fig)
 
+#prediction logic is in tabs[1]
 with tabs[1]:
     st.header(f"Predict {target_column} using {ml_model.__class__.__name__}")
     input = {}
