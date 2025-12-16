@@ -24,7 +24,7 @@ df = df.drop(columns=["post_id","upload_date"])
 DROP_COLS = ["customer_id", TARGET_COL] 
 input_cols = df.drop(columns=DROP_COLS, errors='ignore').columns
 
-tabs = st.tabs(["EDA", "Predictive", "Feature importance"])
+tabs = st.tabs(["EDA", "Predictive"])
 
 with tabs[0]:
     st.header("Exploratory Data Analysis")
@@ -94,18 +94,3 @@ with tabs[1]:
             st.success(f"Prediction of {TARGET_COL}: {pred}")
         else:
             st.success(f"Prediction of {TARGET_COL}: {pred:.2f}")
-with tabs[2]:
-    def show_feature_importance(model, feature_names, top_n=10, display_full=False):
-        if hasattr(model.named_steps['model'], 'feature_importances_'):
-            importances = model.named_steps['model'].feature_importances_
-            feat_importance = pd.Series(importances, index=feature_names).sort_values(ascending=False)
-            st.bar_chart(feat_importance.head(top_n))
-
-            if display_full:
-                st.dataframe(feat_importance)
-            return feat_importance
-        else:
-            st.warning("feature importance is only available for tree-based models") 
-            return None
-    feature_names = joblib.load("feature_names.pkl")
-    feat_importance = show_feature_importance(model, feature_names, top_n=10, display_full=True)
