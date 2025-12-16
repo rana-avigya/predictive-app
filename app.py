@@ -35,6 +35,6 @@ for col in input_cols:
 if st.button("Predict"):
     pred = model.predict(pd.DataFrame([input]))[0]
     if PROBLEM == "classification":
-        st.success(f"Prediction (class): {pred}")
+        st.success(f"Prediction of {TARGET_COL}: {pred}")
     else:
-        st.success(f"Prediction (value): {pred:.2f}")
+        st.success(f"Prediction of {TARGET_COL}: {pred:.2f}")
