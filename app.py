@@ -65,25 +65,23 @@ with tabs[0]:
         sns.heatmap(numeric_cols.corr(), annot=True, cmap="coolwarm", ax=ax)
         st.pyplot(fig)
 
-    #numeric distribution and outliers
-    col = st.selectbox("Select column to boxplot",numeric_cols.columns)
 
-    Q1 = df[col].quantile(0.25)
-    Q3 = df[col].quantile(0.75)
+    st.subheader("Target vs Feature")
+    target_col = st.selectbox("Select Target Column", df.columns, key="target_eda")
+    feature_col = st.selectbox("Select Feature Column", [c for c in df.columns if c != target_col], key="feature_eda")
 
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5*IQR
-    upper_bound = Q3 + 1.5*IQR
-
-    outliers = df[(df[col]<lower_bound)| (df[col]>upper_bound)]
-    st.write(f"Number of outliers in {col}:{len(outliers)}")
-    st.dataframe(outliers)
-
-    fig, ax = plt.subplots(figsize=(6,4))
-    sns.boxplot(x=df[col], ax=ax, color="blue")
-    ax.set_title(f"Boxplot of {col}")
+    fig, ax = plt.subplots()
+    if df[target_col].dtype in ['int64', 'float64']:  # regression
+        if df[feature_col].dtype in ['int64', 'float64']:
+            sns.scatterplot(x=df[feature_col], y=df[target_col], ax=ax)
+        else:
+            sns.boxplot(x=df[feature_col], y=df[target_col], ax=ax)
+    else:  
+        if df[feature_col].dtype in ['int64', 'float64']:
+                sns.boxplot(x=df[target_col], y=df[feature_col], ax=ax)
+        else:
+            sns.countplot(x=feature_col, hue=target_col, data=df, palette="Set1", ax=ax)
     st.pyplot(fig)
-
 
 with tabs[1]:
     st.header(f"Predict {TARGET_COL} using {ml_model.__class__.__name__}")
