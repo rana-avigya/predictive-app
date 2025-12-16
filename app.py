@@ -62,6 +62,23 @@ if len(numeric_cols.columns) > 1:
     st.pyplot(fig)
 
 #numeric distribution and outliers
+col = st.selectbox("Select column to boxplot",numeric_cols.columns)
+
+Q1 = df[col].quantile(0.25)
+Q3 = df[col].quantile(0.75)
+
+IQR = Q3 - Q1
+lower_bound = Q1 - 1.5*IQR
+upper_bound = Q3 + 1.5*IQR
+
+outliers = df[(df[col]<lower_bound)| (df[col]>upper_bound)]
+st.write(f"Number of outliers in {col}:{len(outliers)}")
+st.dataframe(outliers)
+
+fig, ax = plt.subplots(figsize=(6,4))
+sns.boxplot(x=df[col], ax=ax, color="blue")
+sns.set_title(f"Boxplot of {col}")
+st.pyplot(fig)
 
 
 st.header("Input Prediction")
