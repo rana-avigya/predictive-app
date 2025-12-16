@@ -78,7 +78,7 @@ args = parser.parse_args()
 
 df = pd.read_csv(args.csv)
 
-DROP_COLS = ["customer_id", ""]
+DROP_COLS = ["post_id", "upload_date"]
 X, y, preprocessor = preprocess_features(df, args.target, drop_cols=DROP_COLS)
 
 X_train, X_test, y_train, y_test = train_test_split(
