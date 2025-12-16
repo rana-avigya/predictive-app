@@ -63,7 +63,7 @@ import joblib
 from feature_engineering import preprocess_features
 import math
 
-# --- Parse terminal arguments ---
+
 parser = argparse.ArgumentParser(description="Train a predictive model")
 parser.add_argument('--csv', type=str, default='data.csv', help='Path to CSV file')
 parser.add_argument('--target', type=str, required=True, help='Target column name')
@@ -75,7 +75,7 @@ parser.add_argument('--out', type=str, default='model.pkl', help='Output model f
 
 args = parser.parse_args()
 
-# --- Load dataset ---
+
 df = pd.read_csv(args.csv)
 
 DROP_COLS = ["customer_id"]
@@ -85,7 +85,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# --- Choose model dynamically ---
+
 if args.problem == "classification":
     if args.algorithm == "RandomForest":
         model = RandomForestClassifier(random_state=42)
@@ -105,13 +105,13 @@ else:
     else:
         raise ValueError("Invalid algorithm for regression")
 
-# --- Build pipeline ---
+#pipeline build
 pipeline = Pipeline([
     ('preprocess', preprocessor),
     ('model', model)
 ])
 
-
+#hyperparameter tuning
 param_grid = {
     'model__n_estimators': [100, 200],
     'model__max_depth': [None, 5, 10],
@@ -124,7 +124,7 @@ grid.fit(X_train, y_train)
 
 pipeline.fit(X_train, y_train)
 
-# --- Evaluate ---
+# Prediction
 y_pred = pipeline.predict(X_test)
 if args.problem == "classification":
     print("Accuracy:", accuracy_score(y_test, y_pred))
@@ -135,6 +135,6 @@ else:
     print("Best Params:", grid.best_params_)
     print("RMSE:", rmse)
 
-# --- Save model ---
+# model save using joblib
 joblib.dump(pipeline, args.out)
 print(f"Model saved as {args.out} using {args.algorithm}")

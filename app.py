@@ -5,10 +5,11 @@ from sklearn.pipeline import Pipeline
 
 st.title(" Predictive Model App")
 
-# --- Load model ---
-model = joblib.load("model.pkl")  # This pipeline includes preprocessing + ML model
 
-# Detect problem type from the model
+model = joblib.load("model.pkl") 
+
+
+
 ml_model = model.named_steps['model']
 if hasattr(ml_model, 'predict_proba') or hasattr(ml_model, 'classes_'):
     PROBLEM = 'classification'
@@ -31,7 +32,7 @@ for col in input_cols:
     else:
         input[col] = st.selectbox(col, options=df[col].unique())
 
-if st.button("Predict Single"):
+if st.button("Predict"):
     pred = model.predict(pd.DataFrame([input]))[0]
     if PROBLEM == "classification":
         st.success(f"Prediction (class): {pred}")
