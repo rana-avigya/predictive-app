@@ -15,20 +15,21 @@ An interactive streamlit app that reads CSV dataset and displays exploratory dat
 ## How to run
 
 Create a virtual enviroment using this command
-'''
+```
 python3 venv venv
-'''
+```
 Run the virtual environment
-'''
+```
 source venv/bin/activate
-''''
+```
 Install the requirements
-'''
+```
 pip install -r requirements.txt
-'''
+```
 Train the model
-'''python3 train.py --csv csv --target target --problem problem --algorithm algorithm --out out
-'''
+```
+python3 train.py --csv csv --target target --problem problem --algorithm algorithm --out out
+```
 csv is the name of the csv file
 target is the target
 problemn is either classification or regression
