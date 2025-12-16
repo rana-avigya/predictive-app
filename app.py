@@ -4,13 +4,14 @@ import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+#using streamlit to create new page title layout for page
 st.set_page_config(page_title = "Predictive App", layout="wide")
 st.title(" Predictive Model App")
-
+#loads the model generated in train.py using joblib
 data = joblib.load("model.pkl")
 model = data["model"]
 
-TARGET_COL = data["target"]
+target_column = data["target"]
 
 ml_model = model.named_steps['model']
 if hasattr(ml_model, 'predict_proba') or hasattr(ml_model, 'classes_'):
@@ -21,7 +22,7 @@ else:
 df = pd.read_csv("data.csv")
 
 df = df.drop(columns=["post_id","upload_date"])
-DROP_COLS = ["customer_id", TARGET_COL] 
+DROP_COLS = ["customer_id", target_column]
 input_cols = df.drop(columns=DROP_COLS, errors='ignore').columns
 
 tabs = st.tabs(["EDA", "Predictive"])
@@ -82,7 +83,7 @@ with tabs[0]:
     st.pyplot(fig)
 
 with tabs[1]:
-    st.header(f"Predict {TARGET_COL} using {ml_model.__class__.__name__}")
+    st.header(f"Predict {target_column} using {ml_model.__class__.__name__}")
     input = {}
     for col in input_cols:
         if df[col].dtype in ['int64','float64']:
@@ -93,6 +94,6 @@ with tabs[1]:
     if st.button("Predict"):
         pred = model.predict(pd.DataFrame([input]))[0]
         if PROBLEM == "classification":
-            st.success(f"Prediction of {TARGET_COL}: {pred}")
+            st.success(f"Prediction of {target_column}: {pred}")
         else:
-            st.success(f"Prediction of {TARGET_COL}: {pred:.2f}")
+            st.success(f"Prediction of {target_column}: {pred:.2f}")
