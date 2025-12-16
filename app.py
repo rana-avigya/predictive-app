@@ -1,48 +1,39 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import matplotlib.pyplot as plt
-import seaborn as sns
+from sklearn.pipeline import Pipeline
 
+st.title(" Predictive Model App")
 
-st.title("Predictive Model")
+# --- Load model ---
+model = joblib.load("model.pkl")  # This pipeline includes preprocessing + ML model
 
-# CONFIG
-PROBLEM = "classification"  # must match the trained model
-DROP_COLS = ["customer_id"]
-
-# Load model
-model = joblib.load("model.pkl")
-df = pd.read_csv("data.csv")
-input_cols = df.drop(columns=["sentiment"] + DROP_COLS, errors='ignore').columns
-
-
-# display EDA
-
-st.write("dataset preview")
-st.dataframe(df.head())
-
-st.sidebar.header("EDA Options")
-feature = st.sidebar.selectbox("Select feature to visualize", df.columns)
-fig, ax = plt.subplots()
-if df[feature].dtype in ['int64','float64']:
-    sns.histplot(df[feature], kde=True, ax=ax)
+# Detect problem type from the model
+ml_model = model.named_steps['model']
+if hasattr(ml_model, 'predict_proba') or hasattr(ml_model, 'classes_'):
+    PROBLEM = 'classification'
 else:
-    sns.countplot(data=df, x=feature, ax=ax)
-st.pyplot(fig)
+    PROBLEM = 'regression'
+
+st.sidebar.write(f"Model type detected: {ml_model.__class__.__name__}")
+st.sidebar.write(f"Problem type: {PROBLEM}")
 
 
-single_input = {}
+df = pd.read_csv("data.csv")
+DROP_COLS = ["customer_id", "target"]  # Adjust if necessary
+input_cols = df.drop(columns=DROP_COLS, errors='ignore').columns
+
+st.header("Input Prediction")
+input = {}
 for col in input_cols:
     if df[col].dtype in ['int64','float64']:
-        single_input[col] = st.number_input(col, value=float(df[col].mean()))
+        input[col] = st.number_input(col, value=float(df[col].mean()))
     else:
-        single_input[col] = st.selectbox(col, options=df[col].unique())
+        input[col] = st.selectbox(col, options=df[col].unique())
 
-if st.button("Predict"):
-    pred = model.predict(pd.DataFrame([single_input]))[0]
+if st.button("Predict Single"):
+    pred = model.predict(pd.DataFrame([input]))[0]
     if PROBLEM == "classification":
-        st.success(f"Prediction: {pred}")
+        st.success(f"Prediction (class): {pred}")
     else:
         st.success(f"Prediction (value): {pred:.2f}")
-
