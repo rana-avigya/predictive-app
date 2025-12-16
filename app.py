@@ -25,41 +25,43 @@ df = pd.read_csv("data.csv")
 #drops columns to be excluded from EDA and prediction
 df = df.drop(columns=["post_id","upload_date"])
 columns_dropped = ["customer_id", target_column]
-input_cols = df.drop(columns=columns_dropped, errors='ignore').columns
 
 #creates two tabs in the  page, first tab is for EDA and the second tab is for prediction
 tabs = st.tabs(["EDA", "Predictive"])
 
 #EDA logic is in tabs[0]
 with tabs[0]:
+    #EDA logic starts from here
     st.header("Exploratory Data Analysis")
+    #shows the contents of the dataset using the head method
     st.subheader("Dataset Preview")
     st.dataframe(df.head())
-
+    #shows the datatypes of each column in the dataset
     st.subheader("Column datatypes")
     st.write(df.dtypes)
-
+    #describes the dataset showing counts, minimum values, max values
     st.subheader("Summary")
     st.write(df.describe())
+    #displays any missing values int the dataset
     st.subheader("Missing Values")
     st.dataframe(df.isnull().sum())
-
+    #data visualization of the features, using histplots and countplots
     st.subheader("Feature distribution")
     select_col = st.selectbox("Select column" ,df.columns)
     fig, ax = plt.subplots()
-
+    #this logic is to differentiate between numeric and categoric values. int64 and float64 datatypes are numeric
     if df[select_col].dtype in ["int64","float64"]:
         sns.histplot(df[select_col], kde=True, ax=ax)
         ax.set_ylabel(select_col)
         ax.set_xlabel("Count")
-        ax.set_title(f"Distribution of {select_col}")
-    else:
+        ax.set_title(f"Distribution of {select_col}") #numeric values are visualized using histplots
+    else: #the categoric values go here, and are visualized using countplot
         sns.countplot(df[select_col])
         ax.set_ylabel(select_col)
         ax.set_xlabel("Count")
         ax.set_title(f"Distribution of {select_col}")
     st.pyplot(fig)
-
+    #creating a correlation heatmap
     numeric_cols = df.select_dtypes(include=["int64", "float64"])
 
     if len(numeric_cols.columns) > 1:
@@ -68,7 +70,7 @@ with tabs[0]:
         sns.heatmap(numeric_cols.corr(), annot=True, cmap="coolwarm", ax=ax)
         st.pyplot(fig)
 
-
+#creates a target vs feature plot
     st.subheader("Target vs Feature")
     target_col = st.selectbox("Select Target Column", df.columns, key="target_eda")
     feature_col = st.selectbox("Select Feature Column", [c for c in df.columns if c != target_col], key="feature_eda")
@@ -89,12 +91,13 @@ with tabs[0]:
 #prediction logic is in tabs[1]
 with tabs[1]:
     st.header(f"Predict {target_column} using {ml_model.__class__.__name__}")
+    input_cols = df.drop(columns=columns_dropped, errors='ignore').columns #the features to be used for user input
     input = {}
     for col in input_cols:
         if df[col].dtype in ['int64','float64']:
-            input[col] = st.number_input(col, value=float(df[col].mean()))
+            input[col] = st.number_input(col, value=float(df[col].mean())) #numeric features are placed in a number_input box
         else:
-            input[col] = st.selectbox(col, options=df[col].unique())
+            input[col] = st.selectbox(col, options=df[col].unique()) #categoric features are placed in a selectbox
 
     if st.button("Predict"):
         pred = model.predict(pd.DataFrame([input]))[0]
