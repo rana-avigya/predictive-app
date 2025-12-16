@@ -58,16 +58,16 @@ X_train, X_test, y_train, y_test = train_test_split(
 if args.problem == "classification":
     if args.algorithm == "RandomForest":
         model = RandomForestClassifier(n_estimators=300,
-                                       max_depth =15,
-                                       min_samples_split = 5, 
-                                       min_samples_leaf=2,
-                                       max_features='sqrt',
-                                       class_weight='balanced',
+                                       # max_depth =15,
+                                       # min_samples_split = 5,
+                                       # min_samples_leaf=2,
+                                       # max_features='sqrt',
+                                       # class_weight='balanced',
                                        random_state=42)
     elif args.algorithm == "GradientBoosting":
         model = GradientBoostingClassifier(random_state=42)
     elif args.algorithm == "LogisticRegression":
-        model = LogisticRegression(max_iter=1000)
+        model = LogisticRegression(random_state=0)
     else:
         raise ValueError("Invalid algorithm for classification")
 else:
@@ -88,23 +88,16 @@ pipeline = Pipeline([
 
 #hyperparameter tuning using n_estimators, max_depth
 param_grid = {
-    'model__n_estimators': [200, 300, 500],
-    'model__max_depth': [10, 15, 20, None],
-    'model__min_samples_split': [2, 5, 10],
-    'model__min_samples_leaf': [1, 2, 4],
-    'model__max_features': ['sqrt', 'log2']
+    'classification__n_estimators': [200, 500],
+    'classification__max_features': ['auto', 'sqrt', 'log2'],
+    'classification__max_depth': [4, 5, 6, 7, 8],
+    'classification__criterion': ['gini', 'entropy']
 }
 #uses grid search cv to know the accuracy
-grid = GridSearchCV(
-    estimator=pipeline,   
-    param_grid=param_grid,
-    cv=5,
-    scoring='f1',
-    n_jobs=-1,
-    verbose=2
-)
+grid_search = GridSearchCV(estimator=pipeline, param_grid=param_grid, cv=5, scoring='roc_auc_ovr', n_jobs=-1)
 
-grid.fit(X_train, y_train)
+
+grid_search.fit(X_train, y_train)
 
 pipeline.fit(X_train, y_train)
 
