@@ -24,7 +24,7 @@ df = df.drop(columns=["post_id","upload_date"])
 DROP_COLS = ["customer_id", TARGET_COL] 
 input_cols = df.drop(columns=DROP_COLS, errors='ignore').columns
 
-tabs = st.tabs(["EDA", "Predictive"])
+tabs = st.tabs(["EDA", "Predictive", "Feature importance"])
 
 with tabs[0]:
     st.header("Exploratory Data Analysis")
