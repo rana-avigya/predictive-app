@@ -61,6 +61,9 @@ if len(numeric_cols.columns) > 1:
     sns.heatmap(numeric_cols.corr(), annot=True, cmap="coolwarm", ax=ax)
     st.pyplot(fig)
 
+#numeric distribution and outliers
+
+
 st.header("Input Prediction")
 input = {}
 for col in input_cols:
