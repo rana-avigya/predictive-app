@@ -136,5 +136,13 @@ else:
     print("RMSE:", rmse)
 
 # model save using joblib
-joblib.dump(pipeline, args.out)
-print(f"Model saved as {args.out} using {args.algorithm}")
+# joblib.dump(pipeline, args.out)
+# print(f"Model saved as {args.out} using {args.algorithm}")
+
+joblib.dump(
+    {
+        "model": pipeline,
+        "target": args.target
+    },
+    args.out
+)

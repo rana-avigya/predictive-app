@@ -5,10 +5,10 @@ from sklearn.pipeline import Pipeline
 
 st.title(" Predictive Model App")
 
+data = joblib.load("model.pkl")
+model = data["model"]
 
-model = joblib.load("model.pkl") 
-
-
+TARGET_COL = data["target"]
 
 ml_model = model.named_steps['model']
 if hasattr(ml_model, 'predict_proba') or hasattr(ml_model, 'classes_'):
@@ -21,7 +21,7 @@ st.sidebar.write(f"Problem type: {PROBLEM}")
 
 
 df = pd.read_csv("data.csv")
-DROP_COLS = ["customer_id", "target"]  # Adjust if necessary
+DROP_COLS = ["customer_id", TARGET_COL] 
 input_cols = df.drop(columns=DROP_COLS, errors='ignore').columns
 
 st.header("Input Prediction")
