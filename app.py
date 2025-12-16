@@ -23,6 +23,8 @@ else:
 
 
 df = pd.read_csv("data.csv")
+
+df = df.drop(columns=["customer_id"])
 DROP_COLS = ["customer_id", TARGET_COL] 
 input_cols = df.drop(columns=DROP_COLS, errors='ignore').columns
 
