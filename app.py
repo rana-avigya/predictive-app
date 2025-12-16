@@ -67,9 +67,9 @@ with tabs[0]:
     st.subheader("Target vs Feature")
     target_col = st.selectbox("Select Target Column", df.columns, key="target_eda")
     feature_col = st.selectbox("Select Feature Column", [c for c in df.columns if c != target_col], key="feature_eda")
-    st.subheader("Boxplot")
+    
     fig, ax = plt.subplots()
-    if df[target_col].dtype in ['int64', 'float64']:  # regression
+    if df[target_col].dtype in ['int64', 'float64']: 
         if df[feature_col].dtype in ['int64', 'float64']:
             sns.scatterplot(x=df[feature_col], y=df[target_col], ax=ax)
         else:
