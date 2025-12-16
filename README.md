@@ -34,7 +34,7 @@ pip install -r requirements.txt
 ```
 Train the model
 ```
-python3 train.py --csv csv --target target --problem problem --algorithm algorithm --out out
+python3 train.py --target target --problem problem --algorithm algorithm
 ```
 
 Run the app

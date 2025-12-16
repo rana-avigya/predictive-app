@@ -16,11 +16,11 @@ user_input.add_argument('--target', type=str, required=True, help='Target column
 user_input.add_argument('--problem', type=str, choices=['classification','regression'], required=True, help='Problem type')
 user_input.add_argument('--algorithm', type=str, required=True
                     )
-
+#this variable parses user inputs on terminal
 args = user_input.parse_args()
 
 
-df = pd.read_csv(args.csv)
+df = pd.read_csv("data.csv")
 
 #these features will be dropped while training the model
 columns_to_drop = ["post_id", "upload_date"]
