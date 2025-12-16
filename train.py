@@ -24,7 +24,6 @@ args = parser.parse_args()
 
 df = pd.read_csv(args.csv)
 
-df.sample(frac=.3, random_state=42)
 
 DROP_COLS = ["post_id", "upload_date"]
 X, y, preprocessor = preprocess_features(df, args.target, drop_cols=DROP_COLS)
