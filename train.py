@@ -24,6 +24,8 @@ args = parser.parse_args()
 
 df = pd.read_csv(args.csv)
 
+df.sample(frac=.3, random_state=42)
+
 DROP_COLS = ["post_id", "upload_date"]
 X, y, preprocessor = preprocess_features(df, args.target, drop_cols=DROP_COLS)
 
@@ -51,7 +53,7 @@ else:
     else:
         raise ValueError("Invalid algorithm for regression")
 
-#pipeline build
+
 pipeline = Pipeline([
     ('preprocess', preprocessor),
     ('model', model)
@@ -89,6 +91,3 @@ joblib.dump(
     },
     args.out
 )
-
-feature_names = list(X_train.columns)
-joblib.dump(feature_names, "feature_names.pkl")
