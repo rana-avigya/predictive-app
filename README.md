@@ -36,7 +36,7 @@ algorithm can be RandomForest,
 out is the name of the model 
 
 Run the app
-'''
+```
 streamlit run app.py
-'''
+```
 
