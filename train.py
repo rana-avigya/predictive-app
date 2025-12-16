@@ -1,57 +1,3 @@
-# import pandas as pd
-# from sklearn.model_selection import train_test_split, GridSearchCV
-# from sklearn.pipeline import Pipeline
-# from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-# from sklearn.metrics import accuracy_score, classification_report, mean_squared_error
-# import joblib
-# from feature_engineering import preprocess_features
-# import math
-
-# # CONFIG
-# TARGET = "customer_rating"          # update with your target column
-# PROBLEM = "regression" # "classification" or "regression"
-# DROP_COLS = ["customer_id"]  # columns to ignore
-
-# # Load dataset
-# df = pd.read_csv("data.csv").sample(5000, random_state=42)
-# X, y, preprocessor = preprocess_features(df, TARGET, drop_cols=DROP_COLS)
-
-# # Train-test split
-# X_train, X_test, y_train, y_test = train_test_split(
-#     X, y, test_size=0.2, random_state=42
-# )
-
-# # Select model
-# if PROBLEM == "classification":
-#     model = RandomForestClassifier(random_state=42)
-# else:
-#     model = RandomForestRegressor(random_state=42)
-
-# # Pipeline
-# pipeline = Pipeline([
-#     ('preprocess', preprocessor),
-#     ('model', model)
-# ])
-
-
-
-# # Evaluate
-# y_pred = grid.predict(X_test)
-# if PROBLEM == "classification":
-#     print("Best Params:", grid.best_params_)
-#     print("Accuracy:", accuracy_score(y_test, y_pred))
-#     print(classification_report(y_test, y_pred))
-# else:
-#     mse = mean_squared_error(y_test, y_pred)
-#     rmse = math.sqrt(mse)
-#     print("Best Params:", grid.best_params_)
-#     print("RMSE:", rmse)
-
-# # Save model
-# joblib.dump(grid.best_estimator_, "model.pkl")
-# print("Model saved as model.pkl")
-
-
 import pandas as pd
 import argparse
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -135,9 +81,6 @@ else:
     print("Best Params:", grid.best_params_)
     print("RMSE:", rmse)
 
-# model save using joblib
-# joblib.dump(pipeline, args.out)
-# print(f"Model saved as {args.out} using {args.algorithm}")
 
 joblib.dump(
     {
@@ -146,3 +89,6 @@ joblib.dump(
     },
     args.out
 )
+
+feature_names = list(X_train.columns)
+joblib.dump(feature_names, "feature_names.pkl")
