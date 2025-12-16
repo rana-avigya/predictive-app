@@ -19,8 +19,7 @@ if hasattr(ml_model, 'predict_proba') or hasattr(ml_model, 'classes_'):
 else:
     PROBLEM = 'regression'
 
-st.sidebar.write(f"Model type detected: {ml_model.__class__.__name__}")
-st.sidebar.write(f"Problem type: {PROBLEM}")
+
 
 
 df = pd.read_csv("data.csv")
@@ -85,7 +84,7 @@ with tabs[0]:
 
 
 with tabs[1]:
-    st.header("Input Prediction")
+    st.header(f"Predict {TARGET_COL} using {ml_model.__class__.__name__}")
     input = {}
     for col in input_cols:
         if df[col].dtype in ['int64','float64']:
