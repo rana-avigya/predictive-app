@@ -200,19 +200,18 @@ def main():
  #model training
     pipeline.fit(X_train, y_train)
 
-    #evaluation
+    #evaluation of model
     y_pred = pipeline.predict(X_test)
 
     if args.problem == "classification":
         acc = accuracy_score(y_test, y_pred)
-        print(f"Accuracy: {acc:.4f}")
-        print(classification_report(y_test, y_pred))
+        print(f"Accuracy: {acc:.4f}") #prints accuracy of the model
+        print(classification_report(y_test, y_pred)) #prints classification report
     else:
         # rmse = mean_squared_error(y_test, y_pred, squared=False)
         # print(f"RMSE: {rmse:.4f}")
         mse = mean_squared_error(y_test, y_pred)
         rmse = math.sqrt(mse)
-        print("Best Params:", grid.best_params_)
         print("RMSE:", rmse)
 #saving the model using joblib
     joblib.dump(
