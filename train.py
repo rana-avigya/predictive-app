@@ -121,11 +121,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.metrics import accuracy_score, mean_squared_error
+from sklearn.metrics import accuracy_score, mean_squared_error, classification_report
 
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
-
+import math
 
 def get_column_types(X):
     numeric_cols = X.select_dtypes(include=["int64", "float64"]).columns.tolist()
@@ -154,7 +154,7 @@ def main():
 
     if args.target not in df.columns:
         raise ValueError(f"Target column '{args.target}' not in dataset")
-    drop_cols = ["post_id, upload_date"]
+    drop_cols = ["post_id", "upload_date"]
     X = df.drop(columns=[args.target]+drop_cols)
     y = df[args.target]
     numeric_cols, categorical_cols = get_column_types(X)
@@ -206,9 +206,14 @@ def main():
     if args.problem == "classification":
         acc = accuracy_score(y_test, y_pred)
         print(f"Accuracy: {acc:.4f}")
+        print(classification_report(y_test, y_pred))
     else:
-        rmse = mean_squared_error(y_test, y_pred, squared=False)
-        print(f"RMSE: {rmse:.4f}")
+        # rmse = mean_squared_error(y_test, y_pred, squared=False)
+        # print(f"RMSE: {rmse:.4f}")
+        mse = mean_squared_error(y_test, y_pred)
+        rmse = math.sqrt(mse)
+        print("Best Params:", grid.best_params_)
+        print("RMSE:", rmse)
 
     joblib.dump(
         {
