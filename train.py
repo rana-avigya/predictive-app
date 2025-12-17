@@ -150,6 +150,9 @@ def main():
         raise FileNotFoundError(f"CSV file not found: {args.csv}")
 
     df = pd.read_csv(csv_path)
+    columns_to_drop = ["post_id", "upload_date"]
+
+    df.drop( columns_to_drop, axis=1)
 
     if args.target not in df.columns:
         raise ValueError(f"Target column '{args.target}' not in dataset")
