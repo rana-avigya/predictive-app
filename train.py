@@ -126,16 +126,16 @@ from sklearn.metrics import accuracy_score, mean_squared_error, classification_r
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 import math
-
+#this function is used to get the column data types
 def get_column_types(X):
-    numeric_cols = X.select_dtypes(include=["int64", "float64"]).columns.tolist()
-    categorical_cols = X.select_dtypes(include=["object"]).columns.tolist()
+    numeric_cols = X.select_dtypes(include=["int64", "float64"]).columns.tolist() #numeric values belong to int64 or float64 datatype
+    categorical_cols = X.select_dtypes(include=["object"]).columns.tolist() #object datatypes are categorical
     return numeric_cols, categorical_cols
 
 def main():
-    parser = argparse.ArgumentParser(description="Train ML model")
-    parser.add_argument("--csv", default="data.csv")
-    parser.add_argument("--target", required=True)
+    parser = argparse.ArgumentParser(description="Train ML model") #using argparse to get input from user to indicate target and problem
+    parser.add_argument("--csv", default="data.csv") #gets csv from user
+    parser.add_argument("--target", required=True) #gets the target column from user
     parser.add_argument(
         "--problem",
         choices=["classification", "regression"],
@@ -145,22 +145,22 @@ def main():
     args = parser.parse_args()
 
     #loading data
-    csv_path = Path(args.csv)
+    csv_path = Path(args.csv) #defines a variable to find the path of the csv file
     if not csv_path.exists():
-        raise FileNotFoundError(f"CSV file not found: {args.csv}")
+        raise FileNotFoundError(f"CSV file not found: {args.csv}") #error if the csv file not found
 
-    df = pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path) #reading the csv file using pandas
 
 
-    if args.target not in df.columns:
+    if args.target not in df.columns: #raising exception if target column not found in dataset
         raise ValueError(f"Target column '{args.target}' not in dataset")
-    drop_cols = ["post_id", "upload_date"]
-    X = df.drop(columns=[args.target]+drop_cols)
+    drop_cols = ["post_id", "upload_date"] #variable for columns that are not useful to train model
+    X = df.drop(columns=[args.target]+drop_cols) #dropping these columns
     y = df[args.target]
     numeric_cols, categorical_cols = get_column_types(X)
 
     #preprocessing starts here
-    preprocessor = ColumnTransformer(
+    preprocessor = ColumnTransformer( #using column transformer to preprocess the features
         transformers=[
             ("num", StandardScaler(), numeric_cols),
             ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
@@ -169,19 +169,19 @@ def main():
 
     #model selection here
     if args.problem == "classification":
-        model = RandomForestClassifier(
+        model = RandomForestClassifier( #using random forest classifier for classification problem
             n_estimators=100,
             random_state=42,
             n_jobs=-1
         )
     else:
-        model = RandomForestRegressor(
+        model = RandomForestRegressor( #using random forest regressor for regression problem
             n_estimators=100,
             random_state=42,
             n_jobs=-1
         )
 
-    pipeline = Pipeline(
+    pipeline = Pipeline( #building a pipeline
         steps=[
             ("preprocess", preprocessor),
             ("model", model),
@@ -214,7 +214,7 @@ def main():
         rmse = math.sqrt(mse)
         print("Best Params:", grid.best_params_)
         print("RMSE:", rmse)
-
+#saving the model using joblib
     joblib.dump(
         {
             "model": pipeline,
@@ -222,6 +222,6 @@ def main():
         },
         "model.pkl")
 
-
+#calling the main function
 if __name__ == "__main__":
     main()
