@@ -36,7 +36,6 @@ def preprocess_features(df, target_col, drop_cols=None):
 
     numeric_cols = X.select_dtypes(include=['int64', 'float64']).columns
     categorical_cols = X.select_dtypes(include=['object', 'category']).columns
-
     preprocessor = ColumnTransformer([
         ('num', StandardScaler(), numeric_cols),
         ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols)
@@ -51,19 +50,10 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-
-
-
 #if else block to know what algorithm to use
 if args.problem == "classification":
     if args.algorithm == "RandomForest":
-        model = RandomForestClassifier(n_estimators=300,
-                                       # max_depth =15,
-                                       # min_samples_split = 5,
-                                       # min_samples_leaf=2,
-                                       # max_features='sqrt',
-                                       # class_weight='balanced',
-                                       random_state=42)
+        model = RandomForestClassifier(random_state=42, class_weight="balanced")
     elif args.algorithm == "GradientBoosting":
         model = GradientBoostingClassifier(random_state=42)
     elif args.algorithm == "LogisticRegression":
@@ -88,15 +78,16 @@ pipeline = Pipeline([
 
 #hyperparameter tuning using n_estimators, max_depth
 param_grid = {
-    'classification__n_estimators': [200, 500],
-    'classification__max_features': ['auto', 'sqrt', 'log2'],
-    'classification__max_depth': [4, 5, 6, 7, 8],
-    'classification__criterion': ['gini', 'entropy']
+    "model_fit_intercept":[True, False]
 }
 #uses grid search cv to know the accuracy
-grid_search = GridSearchCV(estimator=pipeline, param_grid=param_grid, cv=5, scoring='roc_auc_ovr', n_jobs=-1)
-
-
+grid_search = GridSearchCV(
+    pipeline,
+    param_grid=param_grid,
+    cv=5,
+    scoring="neg_mean_squared_error",
+    n_jobs=-1
+)
 grid_search.fit(X_train, y_train)
 
 pipeline.fit(X_train, y_train)
